@@ -7,7 +7,7 @@
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News"><i class="fa fa-globe"></i></a>
         <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i class="fa fa-user"></i></a>
         <span class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Déconnexion" @click="exit()">
-          <img v-bind:src="this.imageUrl" class="w3-circle w3-margin-right" style="height:23px;width:23px" alt="Avatar">Déconnexion
+          <img v-bind:src="this.user.imageUrl" class="w3-circle w3-margin-right" style="height:23px;width:23px" alt="Avatar">Déconnexion
         </span>
       </div>
     </div>
@@ -27,14 +27,11 @@
     data(){
       return {
         user: {},
-        imageUrl: ''
       }
     },
     methods: {
       loadImage(){
         this.user = JSON.parse(localStorage.getItem('user'));
-        this.imageUrl = this.user.imageUrl;
-        console.log(this.imageUrl)
       },
       exit(){
         localStorage.removeItem('user');

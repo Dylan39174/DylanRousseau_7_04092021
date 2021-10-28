@@ -2,14 +2,7 @@
   <div class="post">
     <NavBar/>
     <div class="cont_post w3-container w3-padding w3margin-right">
-      
-      <div class="w3-cell w3-container w3-col m2 w3-margin-right">
-        <div class="w3-white w3-card w3-padding w3-round-large">
-          <h4 class="w3-center">{{userName}}</h4>
-          <img v-bind:src="this.imageUrl" class="w3-circle pictureProfile" alt="Avatar">
-        </div>
-      </div>
-
+      <CadreUser/>
       <div class="containerAllPosts">
         <div class="w3-container w3-padding w3-card w3-round w3-white">
           <h4 class="w3-leftbar w3-border-bottom w3-margin-bottom w3-left-align w3-padding">Nouveau post</h4>
@@ -70,14 +63,16 @@
 </template>
 
 <script>
-
-import NavBar from '../components/NavBar.vue';
+  import NavBar from '../components/NavBar.vue';
+  import CadreUser from '../components/CadreUser.vue';
   export default {
-  components: { NavBar },
-    name: 'Post',
-    component: {
-      NavBar
+
+    components: { 
+      NavBar, 
+      CadreUser 
     },
+    name: 'Post',
+
     data(){
       return{
         newPost: false,
@@ -256,12 +251,7 @@ import NavBar from '../components/NavBar.vue';
     margin: 80px auto 0px auto !important;
     width: 95%;
     display: flex;
-    .pictureProfile{
-      object-fit: cover;
-      height:106px;
-      width:106px;
-      margin-bottom:20px;
-    }
+    
     .containerAllPosts{
       width: 50%;
       margin-left: 150px;
