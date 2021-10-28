@@ -1,6 +1,7 @@
 const db = require('../models');
 const Post = db.posts;
 const User = db.users;
+const Comment = db.comments;
 
 exports.createPost = (req, res, next) => {
   console.log(req.body);
@@ -32,7 +33,7 @@ exports.getAllPost = (req, res, next) => {
             textPost: post.textPost,
             imagePostUrl: post.imageUrl,
             userName: post.User.userName,
-            userImageUrl: post.User.imageUrl
+            userImageUrl: post.User.imageUrl,
           }
         )
       })

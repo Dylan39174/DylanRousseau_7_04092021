@@ -11,6 +11,11 @@ const routes = [
     path: '/post',
     name: 'Post',
     component: () => import(/* webpackChunkName: "about" */ '../views/Post.vue')
+  },
+  {
+    path: '/:pathMAtch(.*)',
+    name: 'NotFound',
+    component: () => import(/* webpackChunkName: "NotFound" */ '../views/NotFound.vue')
   }
 ]
 

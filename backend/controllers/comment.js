@@ -36,3 +36,13 @@ exports.getAllComment = (req, res, next) => {
     })
     .catch(error => res.status(500).json({error}));
 };
+
+exports.getNbComment = (req, res, next) => {
+  Comment.findAndCountAll({
+    where:{
+      PostId: req.params.id
+    }
+  })
+  .then(count => res.status(200).json(count))
+  .catch(error => res.status(500).json({error}))
+};

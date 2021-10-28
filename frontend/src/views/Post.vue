@@ -53,7 +53,7 @@
               <img class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl">
               <div class="visuLikeComment w3-border-top w3-border-grey w3-panel w3-margin-bottom">
                 <span class="w3-left w3-small"><i class="far fa-thumbs-up"></i>255</span>
-                <span class="w3-left w3-small w3-right lien-comment" @click="getAllComment(post.id)"><i class="far fa-comment-dots"></i>255</span>
+                <span class="w3-left w3-small w3-right lien-comment" @click="getAllComment(post.id)"><i class="far fa-comment-dots"></i>{{post.nbPost}}</span>
               </div>
               <div class="w3-container">
                 <span class="w3-button w3-half w3-round">J'aime</span>
@@ -73,7 +73,7 @@
                       <img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="comment.userImageUrl" alt="">
                     </div>
                     <div class="textComment w3-light-grey w3-padding w3-round">
-                      <h5 class="w3-left-align w3-small"><b>{{comment.userName}}</b></h5>
+                      <h5 class="w3-left-align w3-small"><b>{{comment.userName}}</b> | {{comment.createdAt}}</h5>
                       <span class="w3-left-align text">{{comment.textComment}}</span>
                     </div>
                   </li>
@@ -179,13 +179,29 @@
             values.push(data[key]);
             }
             this.posts = values[0];
-            this.posts[0].createdAt = new Date(this.posts[0].createdAt);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            this.posts[0].createdAt = this.posts[0].createdAt.toLocaleDateString('fr-FR', options);
-          })
-          .catch((err) => {
-            console.log(err);
-          })
+            for (var i = 0 ; i < this.posts.length ; i++){
+              this.posts[i].createdAt = new Date(this.posts[i].createdAt);
+              const options = { month: 'long', day: 'numeric' };
+              this.posts[i].createdAt = this.posts[i].createdAt.toLocaleDateString('fr-FR', options);
+            }
+            this.addNbPost(this.posts.length);
+        })
+      },
+      addNbPost(nbPosts){
+        for(let i = 0 ; i < nbPosts ; i++){
+          fetch('http://localhost:3000/api/comment/count/' + this.posts[i].id)
+            .then((res) => {
+              if(res.ok){
+                return res.json();
+              }
+            })
+            .then((data) => {
+              this.posts[i].nbPost = data.count;
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        }
       },
       sendComment(id){
         var comment = {
@@ -206,6 +222,12 @@
           if (res.ok){
             return res.json();
           }
+        })
+        .then(() => {
+          this.getAllPosts();
+          document.querySelector('.comment').value = '';
+          this.addComment = false;
+          this.vueComment = false;
         })
         .catch((err) => {
           console.log(err);
@@ -228,7 +250,11 @@
             values.push(data[key]);
             }
             this.comments = values[0];
-            console.log(this.comments)
+            for (var i = 0 ; i < this.comments.length ; i++){
+              this.comments[i].createdAt = new Date(this.comments[i].createdAt);
+              const options = { month: 'long', day: 'numeric' };
+              this.comments[i].createdAt = this.comments[i].createdAt.toLocaleDateString('fr-FR', options);
+            }
           })
           .catch((err) => {
             console.log(err);
@@ -283,6 +309,7 @@
           list-style-type: none;
           .onePost{
             float: left;
+            min-width: 100%;
             .visuLikeComment{
               width:65%;
               margin:auto auto;
