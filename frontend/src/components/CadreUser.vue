@@ -31,6 +31,10 @@
 <style lang="scss" scoped>
 .cadreUser{
   width: 200px;
+  h4{
+    text-transform: capitalize;
+    font-weight: bold;
+  }
   .pictureProfile{
     object-fit: cover;
     height:106px;
