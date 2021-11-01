@@ -35,13 +35,7 @@
 .btn_form{
   margin: 30px 0px 0px 0px !important;
 }
-.cursor_img{
-  position: absolute;
-  top: 25%;
-  bottom: 0;
-  right: 0;
-  left: 72%;
-}
+
 .link{
   text-decoration: underline;
   cursor: pointer;

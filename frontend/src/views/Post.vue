@@ -1,34 +1,24 @@
 <template>
   <div class="post">
-    <div class="w3-top">
-      <div class="w3-bar w3-black w3-theme-d2 w3-left-align w3-large">
-        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2"><i class="fa fa-bars"></i></a>
-        <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home"></i></a>
-        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="News"><i class="fa fa-globe"></i></a>
-        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i class="fa fa-user"></i></a>
-        <span class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Déconnexion" @click="exit()">
-          <img v-bind:src="this.imageUrl" class="w3-circle w3-margin-right" style="height:23px;width:23px" alt="Avatar">Déconnexion
-        </span>
-      </div>
-    </div>
-<!-- Navbar on small screens -->
-    <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
-      <a href="#" class="w3-bar-item w3-button w3-padding-large">My Profile</a>
-    </div>
+    <NavBar/>
 
     <div class="cont_post w3-container w3-padding w3margin-right">
       
-      <div class="w3-cell w3-container w3-col m2 w3-margin-right">
+      <!-- bloc cadre Utilisateur -->
+
+      <div class="w3-cell w3-container w3-col m2 w3-margin-right">  
         <div class="w3-white w3-card w3-padding w3-round-large">
           <h4 class="w3-center">{{userName}}</h4>
           <img v-bind:src="this.imageUrl" class="w3-circle pictureProfile" alt="Avatar">
         </div>
       </div>
 
+      <!-- fin bloc -->
+
       <div class="containerAllPosts">
+
+        <!-- bloc-edition-post -->
+
         <div class="w3-container w3-padding w3-card w3-round w3-white">
           <h4 class="w3-leftbar w3-border-bottom w3-margin-bottom w3-left-align w3-padding">Nouveau post</h4>
           <textarea class="textPost w3-padding w3-round-large" name="text" rows="1" placeholder="Écrire un message..." v-model="textPost"></textarea>
@@ -45,20 +35,29 @@
           <div class="w3-button btn w3-margin-top w3-margin-right w3-border w3-round-large w3-pale-green" v-if="newPost==true||textPost!=''" @click="sendPost()">Publier</div>
           <div class="w3-button btn w3-margin-top w3-border w3-round-large w3-pale-green" v-if="newPost==true||textPost!=''" @click="postCancel()">Annuler</div>
         </div>
+
+        <!-- fin bloc -->
+
+        <!-- liste des posts -->
+
         <ul>
           <li v-for="post in posts" :key="post">
+            <!-- visu post -->
             <div class="onePost w3-container w3-padding w3-card w3-round w3-white w3-margin-top w3-margin-bottom">
-              <h5 class="w3-left-align w3-bottombar"><span><img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="post.userImageUrl" alt=""></span><b>{{post.userName}}</b> | <span class="w3-small">{{post.createdAt}}</span></h5>
-              <p class="w3-left-align w3-margin-left w3-margin-top">{{post.textPost}}</p>
-              <img class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl">
-              <div class="visuLikeComment w3-border-top w3-border-grey w3-panel w3-margin-bottom">
-                <span class="w3-left w3-small"><i class="far fa-thumbs-up"></i>255</span>
+              <h5 class="w3-left-align w3-bottombar w3-padding"><span><img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="post.userImageUrl" alt=""></span><b>{{post.userName}}</b> | <span class="w3-small">{{post.createdAt}}</span></h5>
+              <p class="w3-left-align w3-margin-left w3-margin-top w3-margin-bottom">{{post.textPost}}</p>
+              <img v-if="post.imagePostUrl!=''" class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl">
+
+              <div class="visuLikeComment w3-border-top w3-border-grey w3-panel w3-margin-bottom w3-margin-top">
+                <span class="w3-left w3-small"><i class="far fa-thumbs-up"></i></span>
                 <span class="w3-left w3-small w3-right lien-comment" @click="getAllComment(post.id)"><i class="far fa-comment-dots"></i>{{post.nbPost}}</span>
               </div>
+              
               <div class="w3-container">
                 <span class="w3-button w3-half w3-round">J'aime</span>
                 <span class="w3-button w3-half w3-round" @click="addComment=true">Commenter</span>
               </div>
+              <!-- bloc commentaires -->
               <div class="allComment w3-margin-top">
                 <div v-if="addComment==true">
                   <div class="ajoutCommentaire w3-center w3-margin-bottom">
@@ -67,6 +66,7 @@
                   </div>
                   <div class="w3-button w3-border w3-round-large" @click="sendComment(post.id, this.user.id)">Publier</div>
                 </div>
+
                 <ul v-if="vueComment==true&&commentPost==post.id">
                   <li v-for="comment in comments" :key="comment" class="w3-margin-top w3-padding w3-round-xlarge">
                     <div>
@@ -79,20 +79,26 @@
                   </li>
                 </ul>
               </div>
+
             </div>
           </li>
         </ul>
+        <!-- fin de la liste des posts -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import NavBar from '../components/NavBar.vue'
   export default {
     name: 'Post',
+    components:{
+      NavBar
+    },
     data(){
       return{
-        newPost: false,
+        newPost: false, 
         img: false,
         pictureFile: null,
         textPost: '',
@@ -108,10 +114,6 @@
       }
     },
     methods:{
-      exit(){
-        localStorage.removeItem('user');
-        this.$router.push('/');
-      },
       loading(){
         this.user = JSON.parse(localStorage.getItem('user'));
         this.imageUrl = this.user.imageUrl;
