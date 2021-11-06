@@ -22,7 +22,7 @@
             <img class="cursor_img w3-border w3-leftbar w3-rightbar w3-topbar w3-bottombar w3-circle" src="../assets/cursor.png" alt="image d'un curseur" width="150">
           </div>
         </div>
-        <div class="w3-display-container w3-margin-top w3-border w3-border-red w3-pale-red" v-if="erreur!=''">
+        <div class="w3-display-container w3-margin-top w3-margin-bottom w3-border w3-border-red w3-pale-red" v-if="erreur!=''">
           <span @click="deleteError()" class="mess_error w3-button w3-display-topright">&times;</span>
           <p class="w3-text-red"><b>{{erreur}}</b></p>
         </div>
@@ -53,6 +53,9 @@
           <span class="w3-button w3-light-grey w3-round-large w3-border">Enregistrer les modifications</span>
         </div>
       </div>
+      <div class="err w3-container w3-padding w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-pale-red w3-border-red w3-margin-top" v-if="alert==true"> 
+        <span class="w3-text-red"><b>Identifiants incorrects !</b></span>
+      </div>
     </div>
   </div>
 </template>
@@ -66,6 +69,7 @@ export default {
   },
   data(){
     return {
+      alert: false,
       user: {},
       mode: 'login',
       userName: '',
@@ -160,13 +164,14 @@ export default {
         if(res.ok){
           return res.json();
         }
+        return Promise.reject(res.json());
       })
       .then((data) => {
         localStorage.setItem('user', JSON.stringify(data));
         this.$router.push('post');
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        this.alert = true;
       })
     },
     remplir(){
@@ -185,7 +190,6 @@ export default {
       this.$store.commit('modifyMode', text);
     },
     deleteProfile(){
-      console.log(this.user.userId);
       fetch('http://localhost:3000/api/user/' + this.user.userId, {
         method:'DELETE'
       })
@@ -263,5 +267,10 @@ export default {
 }
 #imgUser{
   display: none;
+}
+.err{
+  position: relative;
+  width: 40%;
+  margin: auto auto;
 }
 </style>

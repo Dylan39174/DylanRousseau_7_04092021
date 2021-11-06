@@ -44,13 +44,22 @@
           <li v-for="post in posts" :key="post">
             <!-- visu post -->
             <div class="onePost w3-container w3-padding w3-card w3-round w3-white w3-margin-top w3-margin-bottom">
-              <h5 class="w3-left-align w3-bottombar w3-padding"><span><img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="post.userImageUrl" alt=""></span><b>{{post.userName}}</b> | <span class="w3-small">{{post.createdAt}}</span></h5>
+              <h5 class="postTitle w3-left-align w3-bottombar w3-padding">
+                <div>
+                  <img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="post.userImageUrl" alt="">
+                  <b>{{post.userName}}</b> | <span class="w3-small">{{post.createdAt}}</span>
+                </div>
+                <div>
+                  <i class="deleteIcone fas fa-times w3-padding w3-round-large w3-light-grey w3-border w3-border-grey" title="Supprimer" @click="alert=true;deletePostId=post.id;postUserMadeId=post.userId"></i>
+                </div>
+                
+              </h5>
               <p class="w3-left-align w3-margin-left w3-margin-top w3-margin-bottom">{{post.textPost}}</p>
               <img v-if="post.imagePostUrl!=''" class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl">
 
               <div class="visuLikeComment w3-border-top w3-border-grey w3-panel w3-margin-bottom w3-margin-top">
                 <span class="w3-left w3-small"><i class="far fa-thumbs-up"></i></span>
-                <span class="w3-left w3-small w3-right lien-comment" @click="getAllComment(post.id)"><i class="far fa-comment-dots"></i>{{post.nbPost}}</span>
+                <span class="w3-left w3-small w3-right lien-comment" @click="getAllComment(post.id)" title="Commentaires"><i class="far fa-comment-dots"></i>{{post.nbPost}}</span>
               </div>
               
               <div class="w3-container">
@@ -73,17 +82,41 @@
                       <img class="imgTitle w3-round-xxlarge w3-margin-right" v-bind:src="comment.userImageUrl" alt="">
                     </div>
                     <div class="textComment w3-light-grey w3-padding w3-round">
-                      <h5 class="w3-left-align w3-small"><b>{{comment.userName}}</b> | {{comment.createdAt}}</h5>
+                      <h5 class="w3-left-align w3-small">
+                        <div>
+                          <b>{{comment.userName}}</b> | {{comment.createdAt}}
+                        </div>
+                        <div>
+                          <i class="deleteIcone fas fa-times w3-padding w3-round-large" title="Supprimer"></i>
+                        </div>
+                      </h5>
                       <span class="w3-left-align text">{{comment.textComment}}</span>
                     </div>
                   </li>
                 </ul>
               </div>
-
             </div>
           </li>
         </ul>
         <!-- fin de la liste des posts -->
+
+        <!-- block suppression posts et commentaires -->
+        
+        <!-- Fin du block de suppression -->
+
+      </div>
+      <div class="w3-display-middle w3-white w3-half w3-border w3-round-xlarge w3-border-red w3-padding" v-if="alert==true">
+        <span @click="alert=false;postErr=false;" class="w3-button w3-large w3-display-topright croix" title="Fermer">×</span>
+        <h6 class="w3-xxlarge w3-round-xlarge w3-text-yellow"><i class="fas fa-exclamation-triangle w3-text-yellow"></i>  Attention !</h6>
+        <p class="w3-xlarge">Voulez vous vraiment supprimer ce post ?</p>
+        <div class="zone-button">
+          <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="deletePost(deletePostId, postUserMadeId)" v-if="postErr==false">Oui</span>
+          <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="alert=false" v-if="postErr==false">Non</span>
+        </div>
+        <div class="err w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-pale-red w3-border-red w3-margin-top" v-if="postErr==true">
+          <span class="w3-text-red"><b>Vous n'êtes pas autorisé(e) à supprimer ce post !</b></span>
+        </div>
+        <span class="w3-button w3-light-grey w3-border w3-border-black w3-margin-top" v-if="postErr==true" @click="postErr=false;alert=false">OK</span>
       </div>
     </div>
   </div>
@@ -98,6 +131,10 @@
     },
     data(){
       return{
+        alert: false,
+        postErr: false,
+        deletePostId: 0,
+        postUserMadeId: 0,
         newPost: false, 
         img: false,
         pictureFile: null,
@@ -151,6 +188,9 @@
         }
         fetch('http://localhost:3000/api/post', {
           method: 'POST',
+          headers:{
+            'Authorization': 'Bearer ' + user.token 
+          },
           body: formData
         })
         .then((res) => {
@@ -167,7 +207,11 @@
         })
       },
       getAllPosts(){
-        fetch('http://localhost:3000/api/post')
+        fetch('http://localhost:3000/api/post', {
+          headers:{
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+          }
+        })
           .then((res) => {
             if(res.ok){
               return res.json();
@@ -261,6 +305,28 @@
           .catch((err) => {
             console.log(err);
           })
+      },
+      deletePost(postid, userMadeId){
+        fetch('http://localhost:3000/api/post/' + postid, {
+          method: 'DELETE',
+          headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+          },
+          body: JSON.stringify({userId: this.user.userId, userMadeId: userMadeId})
+        })
+        .then((res) => {
+          if(res.ok){
+            this.alert = false;
+            this.getAllPosts();
+          }else{
+            return Promise.reject(res.json());
+          }
+        })
+        .catch(() => {
+          this.postErr = true;
+        })
       }
     },
     beforeMount(){
@@ -270,6 +336,7 @@
 </script>
 
 <style lang="scss" scoped>
+
   .cont_post{
     margin: 80px auto 0px auto !important;
     width: 95%;
@@ -312,6 +379,10 @@
           .onePost{
             float: left;
             min-width: 100%;
+            .postTitle{
+              display: flex;
+              justify-content: space-between;
+            }
             .visuLikeComment{
               width:65%;
               margin:auto auto;
@@ -363,6 +434,8 @@
                     max-width: 90%;
                     h5{
                       margin: 0 !important;
+                      display: flex;
+                      justify-content: space-between;
                     }
 
                     .text{
@@ -391,6 +464,31 @@
   h5, h4{
     text-transform: capitalize;
   }
-  
-  
+  h6{
+    margin: 0;
+  }
+  .deleteIcone{
+    border: 1px solid transparent;
+    transition: .3s;
+    &:hover{
+      cursor: pointer;
+      border-color: white !important;
+      background-color: black !important;
+      color: white !important;
+      border-radius: 20% 30% !important;
+      
+    }
+  }
+  .zone-button{
+    display: flex;
+    justify-content: space-around;
+  }
+  .croix{
+    border-top-right-radius: 16px;
+  }
+  .err{
+    position: relative;
+    width: 40%;
+    margin: auto auto;
+  }
 </style>

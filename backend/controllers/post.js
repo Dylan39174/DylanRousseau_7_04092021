@@ -32,6 +32,7 @@ exports.getAllPost = (req, res, next) => {
             createdAt: post.createdAt,
             textPost: post.textPost,
             imagePostUrl: post.imageUrl,
+            userId: post.UserId,
             userName: post.User.userName,
             userImageUrl: post.User.imageUrl,
           }
@@ -40,4 +41,16 @@ exports.getAllPost = (req, res, next) => {
       res.status(200).json({ list })
     })
     .catch(error => res.status(500).json({error}));
+};
+
+exports.deletePost = (req, res, next) => {
+  console.log(req.body);
+  if(req.body.userId==req.body.userMadeId){
+    Comment.destroy({where:{PostId: req.params.id}});
+    Post.destroy({where:{id: req.params.id}})
+    .then(() => res.status(200).json({Message: 'Post supprimé !'}))
+    .catch(error => res.status(500).json({error}));
+  }else{
+    res.status(401).json({Message: 'Non autorisé !'});
+  }
 };
