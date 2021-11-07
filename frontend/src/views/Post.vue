@@ -18,7 +18,7 @@
       <div class="containerAllPosts">
 
         <!-- bloc-edition-post -->
-
+    
         <div class="w3-container w3-padding w3-card w3-round w3-white">
           <h4 class="w3-leftbar w3-border-bottom w3-margin-bottom w3-left-align w3-padding">Nouveau post</h4>
           <textarea class="textPost w3-padding w3-round-large" name="text" rows="1" placeholder="Écrire un message..." v-model="textPost"></textarea>
@@ -131,6 +131,7 @@
     },
     data(){
       return{
+        auth: false,
         alert: false,
         postErr: false,
         deletePostId: 0,
@@ -153,9 +154,13 @@
     methods:{
       loading(){
         this.user = JSON.parse(localStorage.getItem('user'));
-        this.imageUrl = this.user.imageUrl;
-        this.userName = this.user.userName;
-        this.getAllPosts();
+        if(this.user != null){
+          this.imageUrl = this.user.imageUrl;
+          this.userName = this.user.userName;
+          this.getAllPosts();
+        }else{
+          this.$router.push('/');
+        }
       },
       loadImgPost(){
         this.newPost = true;

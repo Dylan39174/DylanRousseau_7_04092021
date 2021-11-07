@@ -53,9 +53,6 @@
           <span class="w3-button w3-light-grey w3-round-large w3-border">Enregistrer les modifications</span>
         </div>
       </div>
-      <div class="err w3-container w3-padding w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-pale-red w3-border-red w3-margin-top" v-if="alert==true"> 
-        <span class="w3-text-red"><b>Identifiants incorrects !</b></span>
-      </div>
     </div>
   </div>
 </template>
@@ -69,7 +66,6 @@ export default {
   },
   data(){
     return {
-      alert: false,
       user: {},
       mode: 'login',
       userName: '',
@@ -107,7 +103,7 @@ export default {
       this.file = document.getElementById(text).files[0];
       console.log(this.file);
     },
-    signup(){
+    async signup(){
       if(this.userName == '' || this.email == '' || this.password == ''){
         this.erreur = 'Vous devez remplir tous les champs !';
         document.querySelector('.mess_error').innerHTML = this.erreur;
@@ -120,23 +116,23 @@ export default {
         if(this.file != null){
           formData.append('image', this.file);
         }
-      fetch('http://localhost:3000/api/auth/signup', {
+      let response =  await fetch('http://localhost:3000/api/auth/signup', {
         method: 'POST',
         body: formData
       })
-      .then((res) => {
-        if(res.ok){
-          return res.json();
-        }else{
-          return Promise.reject(res.json());
-        }
-      })
-      .then(() => {
+      let data = await response.json();
+      if (response.ok){
         this.login();
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+      }else{
+        if(data.error != null){
+          let champ = data.error.original.sqlMessage;
+          if (champ.indexOf('userName') > 0){
+            this.erreur = 'Ce nom d\'utilisateur est déjà utilisé !';
+          }else if (champ.indexOf('email') > 0){
+            this.erreur = 'Cette adresse mail est déjà utilisé !';
+          }
+        }
+      }
     },
     deleteError(){
       this.erreur = '';
@@ -171,7 +167,7 @@ export default {
         this.$router.push('post');
       })
       .catch(() => {
-        this.alert = true;
+        this.erreur = 'Identifiants incorrect';
       })
     },
     remplir(){
@@ -213,9 +209,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .userName{
-    text-transform: capitalize;
-  }
   .formulaire-modif{
     h5{
       margin: 0 !important;
@@ -232,9 +225,7 @@ export default {
   .file{
     display: none;
   }
-  .p-userName{
-    text-transform: capitalize;
-  }
+
   .cursor_img{
   position: absolute;
   top: 25%;
