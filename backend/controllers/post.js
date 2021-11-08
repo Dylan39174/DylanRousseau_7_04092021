@@ -44,8 +44,7 @@ exports.getAllPost = (req, res, next) => {
 };
 
 exports.deletePost = (req, res, next) => {
-  console.log(req.body);
-  if(req.body.userId==req.body.userMadeId){
+  if(req.body.userId==req.body.userMadeId||req.body.userId==1){
     Comment.destroy({where:{PostId: req.params.id}});
     Post.destroy({where:{id: req.params.id}})
     .then(() => res.status(200).json({Message: 'Post supprimé !'}))

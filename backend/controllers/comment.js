@@ -46,3 +46,11 @@ exports.getNbComment = (req, res, next) => {
   .then(count => res.status(200).json(count))
   .catch(error => res.status(500).json({error}))
 };
+
+exports.deleteComment = (req, res, next) => {
+  if(req.body.userId==req.body.userMadeId||req.body.userId==1){
+    Comment.destroy({where: {id: req.params.id}})
+      .then(() => res.status(200).json({Message: 'Commentaire Supprimé !'}))
+      .catch(error => res.status(500).json({error}));
+  }
+};

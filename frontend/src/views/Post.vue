@@ -1,6 +1,6 @@
 <template>
   <div class="post">
-    <NavBar/>
+    <NavBar v-if="auth==true"/>
 
     <div class="cont_post w3-container w3-padding w3margin-right">
       
@@ -50,7 +50,7 @@
                   <b>{{post.userName}}</b> | <span class="w3-small">{{post.createdAt}}</span>
                 </div>
                 <div>
-                  <i class="deleteIcone fas fa-times w3-padding w3-round-large w3-light-grey w3-border w3-border-grey" title="Supprimer" @click="alert=true;deletePostId=post.id;postUserMadeId=post.userId"></i>
+                  <i class="deleteIcone fas fa-times w3-padding w3-round-large w3-light-grey w3-border w3-border-grey" title="Supprimer" @click="alert=true;this.delete='post';deletePostId=post.id;postUserMadeId=post.userId"></i>
                 </div>
                 
               </h5>
@@ -87,7 +87,7 @@
                           <b>{{comment.userName}}</b> | {{comment.createdAt}}
                         </div>
                         <div>
-                          <i class="deleteIcone fas fa-times w3-padding w3-round-large" title="Supprimer"></i>
+                          <i class="deleteIcone fas fa-times w3-padding w3-round-large" title="Supprimer" @click="this.alert=true;this.delete='comment';this.deleteCommentId=comment.id;commentUserMadeId=this.user.userId"></i>
                         </div>
                       </h5>
                       <span class="w3-left-align text">{{comment.textComment}}</span>
@@ -108,13 +108,16 @@
       <div class="w3-display-middle w3-white w3-half w3-border w3-round-xlarge w3-border-red w3-padding" v-if="alert==true">
         <span @click="alert=false;postErr=false;" class="w3-button w3-large w3-display-topright croix" title="Fermer">×</span>
         <h6 class="w3-xxlarge w3-round-xlarge w3-text-yellow"><i class="fas fa-exclamation-triangle w3-text-yellow"></i>  Attention !</h6>
-        <p class="w3-xlarge">Voulez vous vraiment supprimer ce post ?</p>
+        <p class="w3-xlarge" v-if="this.delete=='post'">Voulez vous vraiment supprimer ce post ?</p>
+        <p class="w3-xlarge" v-if="this.delete=='comment'">Voulez vous vraiment supprimer ce commentaire ?</p>
         <div class="zone-button">
-          <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="deletePost(deletePostId, postUserMadeId)" v-if="postErr==false">Oui</span>
+          <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="deletePost(deletePostId, postUserMadeId)" v-if="postErr==false&&this.delete=='post'">Oui</span>
+          <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="deleteComment(deleteCommentId, commentUserMadeId)" v-if="postErr==false&&this.delete=='comment'">Oui</span>
           <span class="w3-button w3-quarter w3-round-xlarge w3-light-grey w3-border" @click="alert=false" v-if="postErr==false">Non</span>
         </div>
         <div class="err w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-pale-red w3-border-red w3-margin-top" v-if="postErr==true">
-          <span class="w3-text-red"><b>Vous n'êtes pas autorisé(e) à supprimer ce post !</b></span>
+          <span class="w3-text-red" v-if="this.delete=='post'"><b>Vous n'êtes pas autorisé(e) à supprimer ce post !</b></span>
+          <span class="w3-text-red" v-if="this.delete=='comment'"><b>Vous n'êtes pas autorisé(e) à supprimer ce commentaire !</b></span>
         </div>
         <span class="w3-button w3-light-grey w3-border w3-border-black w3-margin-top" v-if="postErr==true" @click="postErr=false;alert=false">OK</span>
       </div>
@@ -134,8 +137,11 @@
         auth: false,
         alert: false,
         postErr: false,
+        delete: '',
         deletePostId: 0,
         postUserMadeId: 0,
+        deleteCommentId: 0,
+        commentUserMadeId: 0,
         newPost: false, 
         img: false,
         pictureFile: null,
@@ -157,6 +163,7 @@
         if(this.user != null){
           this.imageUrl = this.user.imageUrl;
           this.userName = this.user.userName;
+          this.auth = true;
           this.getAllPosts();
         }else{
           this.$router.push('/');
@@ -240,7 +247,11 @@
       },
       addNbPost(nbPosts){
         for(let i = 0 ; i < nbPosts ; i++){
-          fetch('http://localhost:3000/api/comment/count/' + this.posts[i].id)
+          fetch('http://localhost:3000/api/comment/count/' + this.posts[i].id, {
+            headers:{
+              'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+            }
+          })
             .then((res) => {
               if(res.ok){
                 return res.json();
@@ -265,7 +276,8 @@
           method: 'POST',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
           },
           body: comment
         })
@@ -285,7 +297,11 @@
         })
       },
       getAllComment(id){
-        fetch('http://localhost:3000/api/comment/' + id)
+        fetch('http://localhost:3000/api/comment/' + id, {
+          headers:{
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+          }
+        })
           .then((res) => {
             if(res.ok){
               return res.json();
@@ -324,6 +340,29 @@
         .then((res) => {
           if(res.ok){
             this.alert = false;
+            this.getAllPosts();
+          }else{
+            return Promise.reject(res.json());
+          }
+        })
+        .catch(() => {
+          this.postErr = true;
+        })
+      },
+      deleteComment(commentId, userMadeId){
+        fetch('http://localhost:3000/api/comment/' + commentId, {
+          method: 'DELETE',
+          headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+          },
+          body: JSON.stringify({userId: this.user.userId, userMadeId: userMadeId})
+        })
+        .then((res) => {
+          if(res.ok){
+            this.alert = false;
+            this.vueComment = false;
             this.getAllPosts();
           }else{
             return Promise.reject(res.json());
