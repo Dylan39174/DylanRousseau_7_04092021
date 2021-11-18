@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <NavBar v-if="getMode=='modify'"/>
-    <div class="cont_form w3-padding w3-half w3-display-middle w3-round-xlarge w3-topbar w3-leftbar w3-border w3-row w3-white">
+    <div class="cont_form w3-padding w3-display-middle w3-round-xlarge w3-topbar w3-leftbar w3-border w3-border-black w3-row w3-white">
       <h1 class="w3-margin-bottom" v-if="mode=='login'&&getMode=='connection'"><b>Connexion</b></h1>
       <h1 class="w3-margin-bottom" v-if="mode=='signup'&&getMode=='connection'"><b>Inscription</b></h1>
       <h1 class="w3-margin-bottom" v-if="getMode=='modify'">Paramêtres</h1>
@@ -13,45 +13,26 @@
             <input class="userName w3-large w3-input w3-border w3-margin-bottom w3-medium w3-round" type="text" v-if="mode=='signup'" v-model="userName">
             <label class="w3-large">Adresse mail :</label>
             <input class="email w3-large w3-input w3-border w3-margin-bottom w3-round" type="email" v-model="email">
-            <label class="w3-large">Mot de passe :</label>
+            <label class="w3-large">Mot de passe : <span class="w3-small w3-text-red" v-if="mode=='signup'">(entre 6 et 30 caractères,1 Maj mini, 1 Min mini, 1 chiffre mini)</span></label>
             <input class="password w3-large w3-input w3-border w3-round w3-margin-bottom" type="password" v-model="password">
-            <label class="w3-large" v-if="mode=='signup'">Photo de profil :</label><br>
+            <label class="w3-button w3-round-large w3-border w3-light-grey" for="img-form" v-if="mode=='signup'">Photo de profil</label>
             <input class="w3-margin-top" id="img-form" type="file" ref="file" v-if="mode=='signup'" @change="selectFile('img-form')">
           </div>
-          <div class="w3-cell w3-col m4">
-            <img class="cursor_img w3-border w3-leftbar w3-rightbar w3-topbar w3-bottombar w3-circle" src="../assets/cursor.png" alt="image d'un curseur" width="150">
+          <div class="w3-cell w3-col m4 w3-hide-medium w3-hide-small">
+            <img class="icon" src="../assets/icon.png" alt="icon groupomania" width="150">
           </div>
         </div>
         <div class="w3-display-container w3-margin-top w3-margin-bottom w3-border w3-border-red w3-pale-red" v-if="erreur!=''">
           <span @click="deleteError()" class="mess_error w3-button w3-display-topright">&times;</span>
           <p class="w3-text-red"><b>{{erreur}}</b></p>
         </div>
-        <div class="w3-padding w3-large w3-button w3-pale-green w3-border w3-round-large" v-if="mode=='login'" @click="login()">Se connecter</div>
-        <div class="w3-padding w3-large w3-button w3-pale-green w3-border w3-round-large w3-margin-left" v-if="mode=='login'" @click="remplir()">Connexion rapide</div>
-        <div class="w3-margin w3-large w3-button w3-pale-green w3-border w3-round-large" v-if="mode=='signup'" @click="signup()">S'inscrire</div>
-        <p v-if="mode=='login'">Je n'ai pas de compte: <span class="link w3-text-blue" @click="switchToCreateAccount()">M'inscrire</span></p>
-        <p v-if="mode=='signup'">J'ai déjà un compte: <span class="link w3-text-blue" @click="switchToLogin()">Me connecter</span></p>
-      </div>
 
-      <div v-if="getMode=='modify'">
-        <div class="params">
-          <div class="infoUser w3-left-align w3-border w3-light-grey w3-padding w3-round-xlarge">
-            <h3>Informations</h3>
-            <h5><b>Nom d'utilisateur</b></h5>
-            <span class="userName">{{user.userName}}</span>
-            <h5><b>Adresse mail</b></h5>
-            <span>{{user.email}}</span>
-          </div>
-          <div class="image w3-border w3-light-grey w3-padding w3-round-xlarge">
-            <img id="loadUserImg" class="userImg w3-border w3-leftbar w3-rightbar w3-topbar w3-bottombar w3-circle" v-bind:src="user.imageUrl" alt=""> <br>
-            <input type="file" id="imgUser" @change="selectFile('imgUser', 'loadUserImg')">
-            <label for="imgUser" class="w3-button w3-round-large w3-light-grey w3-border w3-margin-top">Modifier</label>
-          </div>
-        </div>
-        <div class="button w3-margin-top">
-          <span class="w3-button w3-light-grey w3-round-large w3-border" @click="deleteProfile()">Supprimer mon compte</span>
-          <span class="w3-button w3-light-grey w3-round-large w3-border">Enregistrer les modifications</span>
-        </div>
+        <p v-if="mode=='login'">Je n'ai pas de compte: <input type="button" class="w3-text-blue link focus" @click="switchToCreateAccount()" value="M'inscrire"></p><!--changement de formulaire-->
+        <p v-if="mode=='signup'">J'ai déjà un compte: <input type="button" class="w3-text-blue link focus" @click="switchToLogin()" value="Me connecter"></p><!--changement de formulaire-->
+        
+        <input type="button" class="bouton w3-padding w3-large w3-button w3-pale-green w3-border w3-round-large focus" v-if="mode=='login'" @click="login()" value="Se connecter">
+        <input type="button" class="bouton w3-padding w3-large w3-button w3-pale-green w3-border w3-round-large focus" v-if="mode=='signup'" @click="signup()" value="S'inscrire">
+
       </div>
     </div>
   </div>
@@ -84,10 +65,18 @@ export default {
   methods: {
     switchToCreateAccount(){
       this.mode = 'signup';
+      this.userName = '';
+      this.email = '';
+      this.password = '';
+      this.file = null;
       document.title = 'Groupomania | Inscription';
     },
     switchToLogin(){
       this.mode = 'login';
+      this.userName = '';
+      this.email = '';
+      this.password = '';
+      this.file = null;
       document.title = 'Groupomania | Connexion';
     },
     selectFile(text, id){
@@ -124,6 +113,7 @@ export default {
       if (response.ok){
         this.login();
       }else{
+        this.erreur = data.Message;
         if(data.error != null){
           let champ = data.error.original.sqlMessage;
           if (champ.indexOf('userName') > 0){
@@ -170,13 +160,6 @@ export default {
         this.erreur = 'Identifiants incorrect';
       })
     },
-    remplir(){
-      this.email = 'dylan@orange.fr';
-      this.password = 'DYlan39300';
-      document.querySelector('.email').value = this.email;
-      document.querySelector('.password').value = this.password;
-      this.login();
-    },
     exit(){
       this.changeMode('connection');
       localStorage.removeItem('user');
@@ -185,36 +168,51 @@ export default {
     changeMode(text){
       this.$store.commit('modifyMode', text);
     },
-    deleteProfile(){
-      fetch('http://localhost:3000/api/user/' + this.user.userId, {
-        method:'DELETE'
-      })
-      .then((res) => {
-        if(res.ok){
-          return res.json();
+    async deleteProfile(){
+     let response = await fetch('http://localhost:3000/api/user/' + this.user.userId, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
         }
       })
-      .then(() => {
+      let data = await response.json();
+      if (response.ok){
         this.exit();
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      }else{
+        this.erreur = data.Message;
+      }
     }
   },
   beforeMount(){
     this.user = JSON.parse(localStorage.getItem('user'));
+    document.querySelector('body').className = 'w3-light-grey accueil';
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .formulaire-modif{
-    h5{
-      margin: 0 !important;
+  h1{
+    @media screen and (max-width: 992px) {
+      font-size: 26px;
     }
-    input{
-      margin: 0 0 10px 0 !important;
+  }
+  .logoGroupo{
+    width: 300px;
+  }
+  .cont_form{
+    width: 75%;
+    box-shadow: -8px -8px 6px 6px #673ab7 !important;
+    @media screen and (max-width: 500px){
+      width: 100%;
+      box-shadow: none !important;
+    }
+  }
+  #img-form{
+    display: none;
+  }
+  .formulaire-create{
+    @media screen and (max-width: 992px) {
+      width: 100% !important;
     }
   }
   .profile_img{
@@ -225,43 +223,26 @@ export default {
   .file{
     display: none;
   }
-
-  .cursor_img{
-  position: absolute;
-  top: 25%;
-  bottom: 0;
-  right: 0;
-  left: 72%;
-}
-.userImg{
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-}
-.params{
-  display: flex;
-  justify-content: space-around;
-  h5{
-    margin: 10px 0 0 0 !important;
+  .icon{
+    position: absolute;
+    top: 25%;
+    bottom: 0;
+    right: 0;
+    left: 72%;
   }
-  .userName{
-    text-transform: capitalize;
+  label, input{
+    @media screen and (max-width: 700px) {
+      font-size: 16px !important;
+    }
   }
-}
-.button{
-  display: flex;
-  justify-content: space-around !important;
-  
-}
-.infoUser, .image, .button span{
-  min-width: 250px;
-}
-#imgUser{
-  display: none;
-}
-.err{
-  position: relative;
-  width: 40%;
-  margin: auto auto;
-}
+  .err{
+    position: relative;
+    width: 40%;
+    margin: auto auto;
+  }
+  .bouton{
+    @media screen and (max-width: 700px) {
+      font-size: 16px !important;
+    }
+  }
 </style>

@@ -17,7 +17,7 @@ exports.createComment = (req, res, next) => {
 exports.getAllComment = (req, res, next) => {
   Comment.findAll({
     where: {PostId: req.params.id},
-    include: {model: User, required: true, attributes: ["userName", "imageUrl"]},
+    include: {model: User, required: true, attributes: ["id", "userName", "imageUrl"]},
     order: [["id", "ASC"]],
   })
     .then(comment => {
@@ -28,6 +28,7 @@ exports.getAllComment = (req, res, next) => {
             createdAt: comment.createdAt,
             textComment: comment.textComment,
             userName: comment.User.userName,
+            userId: comment.User.id,
             userImageUrl: comment.User.imageUrl
           }
         )
@@ -48,9 +49,19 @@ exports.getNbComment = (req, res, next) => {
 };
 
 exports.deleteComment = (req, res, next) => {
+  console.log(req.body);
+  console.log(req.body.userId + ' | ' + req.body.userMadeId);
   if(req.body.userId==req.body.userMadeId||req.body.userId==1){
-    Comment.destroy({where: {id: req.params.id}})
-      .then(() => res.status(200).json({Message: 'Commentaire Supprimé !'}))
-      .catch(error => res.status(500).json({error}));
+    console.log('bonjour')
+    Comment.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    .then(() => res.status(200).json({Message: 'Commentaire Supprimé !'}))
+    .catch(error => res.status(500).json({error}));
+  }else{
+    return res.status(500).json({Message: 'Vous n\'êtes pas autorisé à supprimer ce commentaire !'});
   }
+  
 };

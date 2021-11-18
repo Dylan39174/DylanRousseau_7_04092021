@@ -6,6 +6,10 @@
 </template>
 
 <style lang="scss">
+// .accueil{
+//   background-image: url('./assets/img_accueil.jpg');
+//   background-repeat: no-repeat;
+// }
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,9 +43,14 @@
 .link{
   text-decoration: underline;
   cursor: pointer;
+  border: none;
+  background-color: white;
 }
-.cont_form{
-  box-shadow: -8px -8px 6px 6px black !important;
+
+.focus{
+  &:focus{
+    border-color: black;
+  }
 }
 
 </style>
