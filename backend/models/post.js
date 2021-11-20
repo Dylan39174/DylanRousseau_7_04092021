@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class Post extends Model {}
   Post.init({
     textPost: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true
     },
     imageUrl: {

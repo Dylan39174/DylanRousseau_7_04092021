@@ -63,6 +63,38 @@ export default {
     }
   },
   methods: {
+    updatePassword(){
+      fetch('http://localhost:3000/api/user/update')
+      .then((res) => {
+        if(res.ok){
+          return res.json();
+        }
+      })
+      .then((data) => {
+        if(data[0].password.indexOf('$')){
+          data.forEach(user => {
+          let pass = {
+            id: user.id,
+            password: user.password
+          }
+          fetch('http://localhost:3000/api/user/update/' + user.id, {
+            method: 'PUT',
+            headers:{
+              'accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pass)
+          })
+            .then((res) => {
+              return res.json()
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+          });
+        }
+      })
+    },
     switchToCreateAccount(){
       this.mode = 'signup';
       this.userName = '';
@@ -186,6 +218,10 @@ export default {
   beforeMount(){
     this.user = JSON.parse(localStorage.getItem('user'));
     document.querySelector('body').className = 'w3-light-grey accueil';
+    
+  },
+  mounted(){
+    this.updatePassword();
   }
 }
 </script>

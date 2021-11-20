@@ -1,5 +1,6 @@
 const db = require('../models');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 const User = db.users;
 const Post = db.posts;
 const Comment = db.comments;
@@ -7,6 +8,27 @@ const Comment = db.comments;
 exports.getAllUsers = (req, res, next) => {
   User.findAll()
     .then(users => res.status(200).json(users))
+    .catch(error => res.status(500).json({error}));
+};
+
+exports.getAllUsersUpdating = (req, res, next) => {
+
+  User.findAll()
+    .then(users => res.status(200).json(users))
+    .catch(error => res.status(500).json({error}));
+};
+
+exports.updateUser = (req, res, next) => {
+console.log(req.body)
+  bcrypt.hash(req.body.password, 10)
+    .then(hash => {
+      User.update(
+        {password: hash},
+        {where: {id: req.params.id}}
+      )
+      .then(() => res.status(200).json({Message: 'Password sécurisé !'}))
+      .catch(error => res.status(500).json({error}));
+    })
     .catch(error => res.status(500).json({error}));
 };
 
@@ -70,3 +92,5 @@ exports.deleteOneUser = (req, res, next) => {
     }
   })
 };
+
+

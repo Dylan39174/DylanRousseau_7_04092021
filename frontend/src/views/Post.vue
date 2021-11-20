@@ -58,7 +58,7 @@
                       </div>
                     </div>
                     <p class="w3-left-align w3-margin-left w3-margin-top w3-margin-bottom">{{post.textPost}}</p>
-                    <img v-if="post.imagePostUrl!=''" class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl" alt="image du post">
+                    <img v-if="post.imagePostUrl!=''&&post.imagePostUrl!=null" class="w3-round-large w3-border w3-margin-top w3-margin-bottom post_img" v-bind:src="post.imagePostUrl" alt="image du post">
                     <div class="visuLikeComment w3-border-top w3-border-grey w3-panel w3-margin-bottom w3-margin-top">
                       <span class="w3-left w3-small"><i class="far fa-thumbs-up"></i></span>
                       <button name="visuComment" class="w3-left w3-small w3-right w3-white lien-comment" @click="getAllComment(post.id)" title="Commentaires"><i class="far fa-comment-dots"></i>{{post.nbPost}}</button>

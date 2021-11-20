@@ -5,6 +5,7 @@ const passwordValidator = require('password-validator');
 const passwordShema = new passwordValidator;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const user = require('../models/user');
 require('dotenv').config();
 
 passwordShema
