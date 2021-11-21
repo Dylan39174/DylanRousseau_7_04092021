@@ -13,12 +13,14 @@ Avant de commencer, assurez-vous que vos services de server local sont bien acti
 1) À l'aide d'un terminal, ouvrez une session Mysql puis executer le fichier "initBDD.sql" qui se trouve dans ce même dossier.
    Le fichier "initBDD.sql" va créer la base "groupomania", puis les tables "Users", "Posts" et "Comments", puis inserera des données 
    dans les différentes tables pour avoir rapidement un bon contenu de départ.
+
+2) Dans le fichier .env_Local, ajusté la valeur des variables selon votre propre configuration, puis renomer le fichier en .env.  
+
+3) Toujour à l'aide d'un terminal, rendez-vous dans le dossier "frontend", puis executez la commance "npm install",
+ceci va installer toutes les dépendances frontend dont l'application à besoin pour fonctionner.
+Une fois l'installation terminée, executez la commande "npm run serve" pour lancer le server frontend, puis entrez l'url local dans votre navigateur.
   
-2) Toujour à l'aide d'un terminal, rendez-vous dans le dossier "frontend", puis executez la commance "npm install",
-   ceci va installer toutes les dépendances frontend dont l'application à besoin pour fonctionner.
-   Une fois l'installation terminée, executez la commande "npm run serve" pour lancer le server frontend, puis entrez l'url local dans votre navigateur.
-  
-3) Encore à l'aide d'un terminal, rendez-vous dans le dossier "backend", puis executez la même commande "npm install" afin
+4) Encore à l'aide d'un terminal, rendez-vous dans le dossier "backend", puis executez la même commande "npm install" afin
 d'installer les dépendances backend.
 Une fois l'installation terminée, executer la commande "nodemon server", puis le server backend se lancera.
 
