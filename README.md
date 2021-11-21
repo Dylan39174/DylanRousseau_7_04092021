@@ -3,8 +3,8 @@
 Bonjour et bienvenue sur le réseau social Groupomania,
 voici quelques étapes indispensables à réaliser avant de faire tourner l'application.
 
-La premiere étape est optionnelle, elle consiste à créer la base de donner local, et de la remplir
-afin de pouvoir directement tester toute les fonctionnalités de l'application.
+La premiere étape est optionnelle, elle consiste à créer la base de données locale, et de la remplir
+afin de pouvoir directement tester toutes les fonctionnalités de l'application.
 Si vous ne souhaitez pas passer par l'étape n°1, vous devrez créer vous mêmes des utilisateurs, créer plusieurs posts
 ainsi que plusieurs comentaires pour pouvoir vérifier les relations entre les différentes tables.
 
@@ -29,7 +29,7 @@ L'application est prête à l'utilisation.
 Si vous êtes passé par l'étape n°1, Vous avez déjà 7 utilisateurs, 7 posts et plusieurs commentaires par post d'enregistrés.
 L'utilisateur n°1 est utilisé par la personne chargée de la modération du réseau.
 
-Les identifiants de connection pour chaque utilisateur utilisent la même architectre, exception faite pour le modérateur:
+Les identifiants de connexion pour chaque utilisateur utilisent la même architectre, exception faite pour le modérateur:
 
 Utilisateurs de 2 à 6 :
 
